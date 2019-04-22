@@ -580,6 +580,7 @@ video {
   background-color: #399c9c;
   line-height: 120px;
   box-sizing: border-box;
+  border-radius: 20px;
 }
 .head-title {
   font-size: 30px;
@@ -722,7 +723,7 @@ video {
   line-height: 1.5;
   font-size: 24px;
   font-size: 1.5rem;
-  font-weight: normal;
+  font-weight: bolder;
 }
 .post__title > a {
   color: #666;
