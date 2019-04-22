@@ -1,10 +1,34 @@
 <!DOCTYPE html><html lang="zh-CN"><head><meta name="generator" content="Hexo 3.8.0"><meta charset="utf-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="author" content="ElliottX4"><meta name="keywords" content="java"><meta name="description" content="互联网 技术 博客"><link rel="alternative" href="/atom.xml" title="NEVER NEVER NEVER" type="application/atom+xml"><link rel="icon" href="/alipay.png"><title>Db-Mysql-Engine - NEVER NEVER NEVER</title><link rel="stylesheet" href="/css/main.css"><link rel="stylesheet" href="/js/fancybox/jquery.fancybox.min.css"><!--[if lt IE 9]><script>(function(a,b){a="abbr article aside audio bdi canvas data datalist details dialog figcaption figure footer header hgroup main mark meter nav output progress section summary template time video".split(" ");for(b=a.length-1;b>=0;b--)document.createElement(a[b])})()</script><![endif]--><script src="/js/jquery-3.1.1.min.js"></script><script src="/js/fancybox/jquery.fancybox.min.js"></script></head><body style="opacity:0"><header class="head"><h1 class="head-title u-fl"><a href="/">NEVER NEVER NEVER</a></h1><nav class="head-nav u-fr"><ul class="head-nav__list"><li class="head-nav__item"><a class="head-nav__link" href="/archives">カタログ/（目录）</a></li></ul></nav></header><main class="main"><article class="post"><header class="post__head"><time class="post__time" datetime="2019-02-27T07:45:30.000Z">2019 - 02 - 27</time><h1 class="post__title"><a href="/2019/02/27/db-mysql-engine/">Db-Mysql-Engine</a></h1><div class="post__main echo"><p>SHOW ENGINES; 用于查看当前引擎。</p>
-<h2 id="Fenerated"><a href="#Fenerated" class="headerlink" title="Fenerated"></a>Fenerated</h2><h3 id="1-FEDERATED是其中一个专门针对远程数据库的实现。"><a href="#1-FEDERATED是其中一个专门针对远程数据库的实现。" class="headerlink" title="1. FEDERATED是其中一个专门针对远程数据库的实现。"></a>1. FEDERATED是其中一个专门针对远程数据库的实现。<br></h3><ul>
+<h2 id="Fenerated：是其中一个专门针对远程数据库的实现。"><a href="#Fenerated：是其中一个专门针对远程数据库的实现。" class="headerlink" title="Fenerated：是其中一个专门针对远程数据库的实现。"></a>Fenerated：是其中一个专门针对远程数据库的实现。</h2><ul>
 <li>在保证两边数据库表结构一致的情况下，用于简单的数据同步。</li>
 <li>两边可以是不同的表名</li>
 <li>仅支持mysql</li>
 <li>不支持事务</li>
 <li>不支持表结构的修改</li>
-<li>CREATE TABLE (……) ENGINE =FEDERATED CONNECTION=’mysql://[name]:[pass]@[location]:[port]/[db-name]/[table-name]’ </li>
+<li>CREATE TABLE (……) ENGINE =FEDERATED CONNECTION=’mysql://[name]:[pass]@[location]:[port]/[db-name]/[table-name]’ <h2 id="InnoDB：-数据库默认的存储引擎，设计为处理大容量数据-。"><a href="#InnoDB：-数据库默认的存储引擎，设计为处理大容量数据-。" class="headerlink" title="InnoDB： 数据库默认的存储引擎，设计为处理大容量数据 。"></a>InnoDB： 数据库默认的存储引擎，设计为处理大容量数据 。</h2></li>
+<li>提供事务，实现sql标准四种隔离级别</li>
+<li>有行级锁，锁的颗粒度更小，并发情况下效率更高，但是当不能确定扫描范围的时候，依旧会锁全表</li>
+<li>支持外键</li>
+<li>AUTO_INCREMENT类型的字段，InnoDB中必须包含只有该字段的索引</li>
+<li>DELETE FROM table时，InnoDB不会重新建立表，而是一行一行的删除</li>
+<li>会在内存中缓冲数据和索引，但是不支持fulltext的索引</li>
+<li>没有保存表的行数，获取全表行数的时候需要扫描全表</li>
+<li>单表最大存储取决于操作系统的单文件大小和表结构的复杂程度<h2 id="MyIsam：适合只读的数据库"><a href="#MyIsam：适合只读的数据库" class="headerlink" title="MyIsam：适合只读的数据库"></a>MyIsam：适合只读的数据库</h2></li>
+<li>不支持事务，外键，行级锁(只能锁全表)</li>
+<li>查询速度很快， 增加和修改的速度很慢，因为需要锁全表</li>
+<li>存储了表的行数</li>
+<li>AUTO_INCREMENT类型的字段，可以和其他字段一起建立联合索引</li>
+<li>ISAM索引方法，按顺序的静态索结构，但不支持事务和容错，可以采用实时备份来容错。<h2 id="Memory：试用于不断变化的临时表"><a href="#Memory：试用于不断变化的临时表" class="headerlink" title="Memory：试用于不断变化的临时表"></a>Memory：试用于不断变化的临时表</h2></li>
+<li>使用内存在存表，每个表对应一个磁盘文件，内存访问，速度极快</li>
+<li>服务关闭，没有及时保存的数据会丢失</li>
+<li>支持hash和B树索引，默认hash索引</li>
+<li>数据太多可能会造成内存溢出，可调节max_heap_table_size来控制表的大小。</li>
+<li>要及时删除表，否则内存中一直有表暂居空间</li>
+<li>只能存储数据长度固定的数据(blob，text类型数据不支持)<h2 id="Mrg-Myisam：水平分表的一种方式"><a href="#Mrg-Myisam：水平分表的一种方式" class="headerlink" title="Mrg_Myisam：水平分表的一种方式"></a>Mrg_Myisam：水平分表的一种方式</h2></li>
+<li>内部没有真正的数据，是多个引擎中的多个表的聚合，可以直接查询，删除，更新操作。<h2 id="Blackhole：所有写入的数据都会被丢弃，但是会保留操作日志"><a href="#Blackhole：所有写入的数据都会被丢弃，但是会保留操作日志" class="headerlink" title="Blackhole：所有写入的数据都会被丢弃，但是会保留操作日志"></a>Blackhole：所有写入的数据都会被丢弃，但是会保留操作日志</h2></li>
+<li>只记录下表的操作日志，不会存储任何表数据</li>
+<li>用来验证binlog功能的所需要的额外负载 (需要继续探究)</li>
+<li>充当日志服务器</li>
+<li>验证dump file语法的正确性</li>
 </ul>
 </div></header><footer class="post__foot u-cf"><ul class="post__tag u-fl"><li class="post__tag__item"><a class="post__tag__link" href="/tags/work/">work</a></li><li class="post__tag__item"><a class="post__tag__link" href="/tags/mysql/">mysql</a></li></ul></footer></article></main><footer class="foot"><div class="foot-copy">&copy; 2018 - 2019 ElliottX4</div></footer><script src="/js/scroller.js"></script><script src="/js/main.js"></script></body></html>
